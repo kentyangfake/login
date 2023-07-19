@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import './App.css';
 import img from './Graphic_Side.jpg';
 
 function App() {
@@ -86,12 +85,12 @@ function App() {
   };
 
   return (
-    <div className="flex w-full">
+    <div className="flex w-full min-h-full">
       {token ? (
-        <div>Hi {welcomName}</div>
+        <div className="flex justify-center items-center">Hi {welcomName}</div>
       ) : (
         <>
-          <div className="flex justify-center items-center w-1/2">
+          <div className="flex flex-grow justify-center items-center">
             <div className="flex flex-col p-3 items-center border border-gray-300 rounded w-80">
               <div className="bg-black flex justify-center items-center text-gray-400 text-xs w-full h-8">
                 LOGO
@@ -154,7 +153,7 @@ function App() {
               </div>
             </div>
           </div>
-          <img src={img} className="w-1/2" />
+          <img src={img} className="h-[100vh]" />
         </>
       )}
     </div>
