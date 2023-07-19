@@ -71,7 +71,10 @@ const LoginForm: React.FC<LoginFormProps> = ({
         </div>
         <div
           className="flex justify-center cursor-pointer items-center mt-5 bg-blue-600 text-white rounded w-36 h-8"
-          onClick={handleSubmit}
+          onClick={() => {
+            if (isLoading) return;
+            handleSubmit();
+          }}
         >
           {isLoading ? 'Loading...' : 'Sign In'}
         </div>
