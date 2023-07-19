@@ -35,6 +35,8 @@ function App() {
         });
         const json = await res.json();
         setWelcomName(json.data.name);
+        setUsername('');
+        setPassword('');
       } catch (error) {
         console.log(error);
       }
@@ -100,11 +102,22 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('AccessToken');
+    setToken('');
+  };
+
   return (
     <div className="flex w-full min-h-full">
       {token ? (
-        <div className="flex w-full justify-center items-center">
+        <div className="flex flex-col w-full justify-center items-center">
           Hi {welcomName}
+          <div
+            className="flex justify-center cursor-pointer items-center mt-5 bg-blue-600 text-white rounded w-36 h-8"
+            onClick={handleLogout}
+          >
+            Logout
+          </div>
         </div>
       ) : (
         <>
