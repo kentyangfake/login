@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import img from './Graphic_Side.jpg';
+import LoginForm from './components/LoginForm';
+import Welcome from './components/Welcome';
 
 const API_BASE_URL = 'https://interview-test-api-2bfhetuihq-de.a.run.app';
 
@@ -110,80 +112,21 @@ function App() {
   return (
     <div className="flex w-full min-h-full">
       {token ? (
-        <div className="flex flex-col w-full justify-center items-center">
-          Hi {welcomName}
-          <div
-            className="flex justify-center cursor-pointer items-center mt-5 bg-blue-600 text-white rounded w-36 h-8"
-            onClick={handleLogout}
-          >
-            Logout
-          </div>
-        </div>
+        <Welcome welcomName={welcomName} handleLogout={handleLogout} />
       ) : (
         <>
-          <div className="flex flex-grow justify-center items-center">
-            <div className="flex flex-col p-3 items-center border border-gray-300 rounded w-80">
-              <div className="bg-black flex justify-center items-center text-gray-400 text-xs w-full h-8">
-                LOGO
-              </div>
-              <div className="text-3xl font-bold mt-8">Sign In</div>
-              <div className="text-gray-400 mt-2 text-sm">
-                Sign in to stay connected.
-              </div>
-              <div className="self-start text-xs text-gray-400 mt-3">
-                Username
-              </div>
-              <input
-                type="email"
-                value={username}
-                className={`${
-                  usernameError ? 'border-red-400' : 'border-blue-400'
-                } border rounded w-full`}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-              {usernameError && (
-                <div className="self-start text-xs text-red-400">
-                  {usernameError}
-                </div>
-              )}
-              <div className="self-start text-xs text-gray-400 mt-3">
-                password
-              </div>
-              <input
-                type="password"
-                value={password}
-                className={`${
-                  passwordError ? 'border-red-400' : 'border-blue-400'
-                } border rounded w-full`}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              {passwordError && (
-                <div className="self-start text-xs text-red-400">
-                  {passwordError}
-                </div>
-              )}
-              <div className="flex justify-between w-full mt-5">
-                <label className="text-xs text-gray-400">
-                  <input
-                    type="checkbox"
-                    checked={isRemember}
-                    className="mr-1"
-                    onChange={(e) => setIsRemember(e.target.checked)}
-                  />
-                  Remember me?
-                </label>
-                <button className="text-xs text-blue-700">
-                  forgot password?
-                </button>
-              </div>
-              <div
-                className="flex justify-center cursor-pointer items-center mt-5 bg-blue-600 text-white rounded w-36 h-8"
-                onClick={handleSubmit}
-              >
-                {isLoading ? 'Loading...' : 'Sign In'}
-              </div>
-            </div>
-          </div>
+          <LoginForm
+            username={username}
+            password={password}
+            isRemember={isRemember}
+            usernameError={usernameError}
+            passwordError={passwordError}
+            isLoading={isLoading}
+            setUsername={setUsername}
+            setPassword={setPassword}
+            setIsRemember={setIsRemember}
+            handleSubmit={handleSubmit}
+          />
           <img alt="background" src={img} className="h-[100vh]" />
         </>
       )}
