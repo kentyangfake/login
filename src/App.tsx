@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import img from './Graphic_Side.jpg';
 
+const API_BASE_URL = 'https://interview-test-api-2bfhetuihq-de.a.run.app';
+
 function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -9,6 +11,7 @@ function App() {
   const [passwordError, setPasswordError] = useState('');
   const [token, setToken] = useState('');
   const [welcomName, setWelcomName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const localToken = localStorage.getItem('AccessToken');
@@ -21,59 +24,70 @@ function App() {
     if (!token) {
       return;
     }
-    const handleLogin = async (token: string) => {
-      const res = await fetch(
-        'https://interview-test-api-2bfhetuihq-de.a.run.app/user',
-        {
+    const fetchUserData = async (token: string) => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/user`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             Authorization: token,
           },
-        }
-      );
-      const json = await res.json();
-      setWelcomName(json.data.name);
+        });
+        const json = await res.json();
+        setWelcomName(json.data.name);
+      } catch (error) {
+        console.log(error);
+      }
     };
 
-    handleLogin(token);
+    fetchUserData(token);
   }, [token]);
 
-  const handleSubmit = async () => {
+  const validateForm = () => {
+    let isValid = true;
+
     if (username === '') {
       setUsernameError('帳號尚未輸入');
-      return;
+      isValid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username)) {
+      setUsernameError('請輸入正確的Email格式');
+      isValid = false;
+    } else {
+      setUsernameError('');
     }
+
     if (password === '') {
       setPasswordError('密碼尚未輸入');
-      return;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(username)) {
-      setUsernameError('請輸入正確的Email格式');
-      return;
-    }
-    if (password.length < 3) {
+      isValid = false;
+    } else if (password.length < 3) {
       setPasswordError('密碼輸入字數過少');
+      isValid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    return isValid;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) {
       return;
     }
+    setIsLoading(true);
     try {
-      const res = await fetch(
-        'https://interview-test-api-2bfhetuihq-de.a.run.app/user/login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: username,
-            password: password,
-          }),
-        }
-      );
+      const res = await fetch(`${API_BASE_URL}/user/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
 
-      const json = await res.json();
-      const AccessToken = json.data.token;
+      const { data } = await res.json();
+      const { token: AccessToken } = data;
       if (isRemember) {
         localStorage.setItem('AccessToken', AccessToken);
       }
@@ -81,13 +95,17 @@ function App() {
     } catch {
       setUsernameError('帳號錯誤');
       setPasswordError('密碼錯誤');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="flex w-full min-h-full">
       {token ? (
-        <div className="flex justify-center items-center">Hi {welcomName}</div>
+        <div className="flex w-full justify-center items-center">
+          Hi {welcomName}
+        </div>
       ) : (
         <>
           <div className="flex flex-grow justify-center items-center">
@@ -149,11 +167,11 @@ function App() {
                 className="flex justify-center cursor-pointer items-center mt-5 bg-blue-600 text-white rounded w-36 h-8"
                 onClick={handleSubmit}
               >
-                Sign In
+                {isLoading ? 'Loading...' : 'Sign In'}
               </div>
             </div>
           </div>
-          <img src={img} className="h-[100vh]" />
+          <img alt="background" src={img} className="h-[100vh]" />
         </>
       )}
     </div>
